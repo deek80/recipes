@@ -29,9 +29,9 @@ I can't think of a word that's the right level of generic, other than ingredient
 a fucking oven isn't an ingredient, but I don't want the model to be called Thing etiher.
 """
 
-__all__ = ["Model", "Ingredient", "Instruction"]
+__all__ = ["Model", "Ingredient", "Instruction", "Recipe"]
 
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import as_declarative, declared_attr, relationship
 
 
@@ -61,20 +61,21 @@ products = Table(
 
 
 class Ingredient(Model):
-    name = Column(String, unique=True, index=True)
-
-    # every "recipe" Ingredient will have Instructions
-    instructions = relationship("Instruction", back_populates="recipe")
+    name = Column(String, unique=True)
 
 
 class Instruction(Model):
     details = Column(String)
-    duration_seconds = Column(Integer, default=0)
+    duration = Column(Integer, default=0)
 
-    # every Instruction will belong to a "recipe" Ingredient
-    recipe_id = Column(Integer, ForeignKey("ingredient.id"))
-    recipe = relationship("Ingredient", back_populates="instructions")
+    recipe_id = Column(Integer, ForeignKey("recipe.id"))
+    recipe = relationship("Recipe", back_populates="instructions")
 
-    # Instructions can have many requirements and products
     requirements = relationship("Ingredient", secondary=requirements)
     products = relationship("Ingredient", secondary=products)
+
+
+class Recipe(Model):
+    name = Column(String)
+    path = Column(String, unique=True)
+    instructions = relationship("Instruction", back_populates="recipe")

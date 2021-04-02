@@ -1,3 +1,3 @@
-from .connection import engine, session
+from .connection import engine, Session
 from .models import *
-from .util import seed_database
+from .util import init_db, seed_db
