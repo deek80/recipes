@@ -5,8 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
-uvicorn = "*"
 ipython = "*"
+uvicorn = "*"
 
 [packages]
 fastapi = "*"
