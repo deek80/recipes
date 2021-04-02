@@ -1,0 +1,5 @@
+#!/bin/bash
+case "$1" in
+  shell) pipenv run ipython --profile=recipes_api ;;
+  app)   pipenv run uvicorn recipes_api:app --reload;;
+esac
