@@ -2,25 +2,35 @@ from typing import List
 from pydantic import BaseModel
 
 
-class ModelSchema(BaseModel):
-    id: int
-
+class Schema(BaseModel):
     class Config:
         orm_mode = True
 
 
-class IngredientSchema(ModelSchema):
+class Ingredient(Schema):
+    id: int
     name: str
 
 
-class InstructionSchema(ModelSchema):
+class Requirement(Schema):
+    ingredient: Ingredient
+    amount: str
+
+
+class Product(Schema):
+    ingredient: Ingredient
+    amount: str
+
+
+class Instruction(Schema):
+    id: str
     details: str
     duration: int
-    requirements: List[IngredientSchema]
-    products: List[IngredientSchema]
+    requirements: List[Requirement]
+    products: List[Product]
 
 
-class RecipeSchema(ModelSchema):
+class Recipe(Schema):
     name: str
     path: str
-    instructions: List[InstructionSchema]
+    instructions: List[Instruction]

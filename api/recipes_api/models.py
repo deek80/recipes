@@ -29,10 +29,18 @@ I can't think of a word that's the right level of generic, other than ingredient
 a fucking oven isn't an ingredient, but I don't want the model to be called Thing etiher.
 """
 
-__all__ = ["Model", "Ingredient", "Instruction", "Recipe"]
+__all__ = [
+    "Ingredient",
+    "Instruction",
+    "Model",
+    "Product",
+    "Recipe",
+    "Requirement",
+]
 
-from sqlalchemy import Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import as_declarative, declared_attr, relationship
+from sqlalchemy.sql.expression import null
 
 
 @as_declarative()
@@ -41,41 +49,41 @@ class Model:
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(Integer, primary_key=True, index=True)
 
-
-requirements = Table(
-    "requirements",
-    Model.metadata,
-    Column("ingredient", Integer, ForeignKey("ingredient.id")),
-    Column("instruction", Integer, ForeignKey("instruction.id")),
-    Column("amount", String),
-)
-
-products = Table(
-    "products",
-    Model.metadata,
-    Column("instruction", Integer, ForeignKey("instruction.id")),
-    Column("ingredient", Integer, ForeignKey("ingredient.id")),
-)
+class Recipe(Model):
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    path = Column(String, unique=True)
+    instructions = relationship("Instruction", back_populates="recipe")
 
 
 class Ingredient(Model):
+    id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+
+    required_in = relationship("Requirement", backref="ingredient")
+    product_of = relationship("Product", backref="ingredient")
 
 
 class Instruction(Model):
-    details = Column(String)
+    id = Column(Integer, primary_key=True)
+    details = Column(String, nullable=False)
     duration = Column(Integer, default=0)
 
     recipe_id = Column(Integer, ForeignKey("recipe.id"))
     recipe = relationship("Recipe", back_populates="instructions")
 
-    requirements = relationship("Ingredient", secondary=requirements)
-    products = relationship("Ingredient", secondary=products)
+    requirements = relationship("Requirement", backref="instruction")
+    products = relationship("Product", backref="instruction")
 
 
-class Recipe(Model):
-    name = Column(String)
-    path = Column(String, unique=True)
-    instructions = relationship("Instruction", back_populates="recipe")
+class Requirement(Model):
+    ingredient_id = Column(Integer, ForeignKey("ingredient.id"), primary_key=True)
+    instruction_id = Column(Integer, ForeignKey("instruction.id"), primary_key=True)
+    amount = Column(String, nullable=False, default="")
+
+
+class Product(Model):
+    ingredient_id = Column(Integer, ForeignKey("ingredient.id"), primary_key=True)
+    instruction_id = Column(Integer, ForeignKey("instruction.id"), primary_key=True)
+    amount = Column(String, nullable=False, default="")
