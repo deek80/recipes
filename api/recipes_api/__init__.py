@@ -1,12 +1,10 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
 from recipes_api import models, schemas
-from recipes_api.config import app_config
-from recipes_api.database import connection
+from recipes_api.config import config
 
 app = FastAPI()
-db = Depends(connection)
+db = Depends(config.db.connection)
 
 
 @app.get("/", response_model=schemas.Recipe)
@@ -19,8 +17,8 @@ def recipe(db=db):
     return result
 
 
-if app_config.environment == "test":
-    from recipes_api.test import init_db, seed_db
+if config.environment == "test":
+    from recipes_api.fake import init_db, seed_db
 
     @app.get("/seed", response_model=schemas.Recipe)
     def seed(db=db):
