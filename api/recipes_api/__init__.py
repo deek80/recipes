@@ -4,17 +4,19 @@ from recipes_api import models, schemas
 from recipes_api.config import config
 
 app = FastAPI()
-db = Depends(config.db.connection)
+db = Depends(config.db_session)
 
 
 @app.get("/", response_model=schemas.Recipe)
 def recipe(db=db):
-    query = select(models.Recipe, models.Instruction).join(models.Instruction)
-    print("Q:", query)
-    result = db.execute(query).all()
-    for (r, i) in result:
-        print("result:", r.__dict__, i.__dict__)
+    result = db.execute(select(models.Recipe)).scalar()
+    print("result:", result.__dict__)
     return result
+
+
+@app.get("/config")
+def get_config():
+    return config.dict()
 
 
 if config.environment == "test":

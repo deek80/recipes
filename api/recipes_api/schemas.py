@@ -7,30 +7,12 @@ class Schema(BaseModel):
         orm_mode = True
 
 
-class Ingredient(Schema):
-    id: int
-    name: str
-
-
-class Requirement(Schema):
-    ingredient: Ingredient
-    amount: str
-
-
-class Product(Schema):
-    ingredient: Ingredient
-    amount: str
-
-
 class Instruction(Schema):
-    id: str
-    details: str
-    duration: int
-    requirements: List[Requirement]
-    products: List[Product]
+    id: int
+    data: dict
 
 
 class Recipe(Schema):
-    name: str
-    path: str
+    id: int
+    data: dict
     instructions: List[Instruction]

@@ -12,6 +12,7 @@ faker = "*"
 [packages]
 fastapi = "*"
 sqlalchemy = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  api:
+    build:
+      context: ./api
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api/recipes_api:/opt/api/recipes_api
+  db:
+    build:
+      context: ./db
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev
+# web:
+#   build:
+#     context: ./web
+#   ports:
+#     - "3000:3000"
+#   volumes:
+#     - ./web/public:/opt/web/public
+#     - ./web/src:/opt/web/src

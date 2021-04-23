@@ -1,46 +1,68 @@
 """
-How about this: 
-Ingredient --many-to-one--> Instruction --one-to-many--> Ingredient
+Trying a new data setup. Half way through the POC I already hate
+how hard it is to query and create these things.
 
-Instructions have inputs and outputs, and server as a way to get from one ingredient
-to another. i.e.
-    Ingredients required:
-        onion
-        mushrooms
+So, I'm going to try the suggestion from a halihax chat. Basically
+put your keys and table relationships in SQL format, and the data itself
+in a json column.
 
-    Instruction:
-        dice {onion} and {mushroom} and fry in oil until tender
+Hmm, I forget how this was much different than what I've got. I know I
+had something decent in mind.
 
-    Ingredients produced:
-        onion-mushroom-mixture
 
-and then in a later instruction you'll use that mixture to complete whatever thing
-you're cooking. I think I should support unnamed products somehow, so you don't have
-to overdo it for sequential instructions (Cook the thing for 5 minutes, add this and
-cook for another 2 minutes, add that and cook for 30 more seconds, etc). Or maybe a
-better way would be to have it really easy to name the intermediate mixtures...
-For baking you see "dry ingredients" and whatnot. "Pan sauce", etc...I guess you could
-push the same name down the line if you just augmented it a bunch of times.
+ok, what things should be easy to do:
+- must: list the recipes
+- should: filter the recipes by name
+- must: list the ingredients/amounts for a recipe
+- should: list the recipes containing all of these ingredients
+- must: what instructions can be done next
+- must: create/update a recipe
+- maybe: rate/comment a recipe?
 
-I'd also like to support non-food "ingredients" and 0-requirement instructions like:
-    Instruction(preheat the oven to 425F) --> Ingredient(preheated oven)
+ok how about this
+  Recipe:
+    name, etc
 
-I can't think of a word that's the right level of generic, other than ingredient. Like
-a fucking oven isn't an ingredient, but I don't want the model to be called Thing etiher.
+  Instruction:
+    details, etc
+    recipe_id
+
+    data: {
+        required_ingredients: [
+            {id: 123, amount: "2 cups"},
+        ],
+        required_instructions: [
+            {id: 234, product: "stuff", amount: "all"}
+        ],
+        products: ["stuff", "etc"]
+    }
+
+  Ingredient:
+    name, etc
+
+pros:
+  easy to list recipes
+  easy to get edges from graph without crazy joins
+
+cons:
+  somewhat annoying to get all ingredients for a recipe, but you'd do
+  that in the backend...so it's not so bad.
+    1. get instructions where recipe_id = blah
+    2. get ingredients where id in (instructions.required_ingredients.id list)
+
+thoughts:
+  jeez, maybe Ingredient doesn't deserve to be a class at this point. you could still
+  build a list of all ingredients if need be, or search it. postgres is pretty damn
+  good with json columns.
+
+
 """
 
-__all__ = [
-    "Ingredient",
-    "Instruction",
-    "Model",
-    "Product",
-    "Recipe",
-    "Requirement",
-]
+__all__ = ["Instruction", "Model", "Recipe"]
 
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import as_declarative, declared_attr, relationship
-from sqlalchemy.sql.expression import null
 
 
 @as_declarative()
@@ -52,38 +74,14 @@ class Model:
 
 class Recipe(Model):
     id = Column(Integer, primary_key=True)
-    name = Column(String)
-    path = Column(String, unique=True)
+    data = Column(JSONB)
+
     instructions = relationship("Instruction", back_populates="recipe")
-
-
-class Ingredient(Model):
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-
-    required_in = relationship("Requirement", backref="ingredient")
-    product_of = relationship("Product", backref="ingredient")
 
 
 class Instruction(Model):
     id = Column(Integer, primary_key=True)
-    details = Column(String, nullable=False)
-    duration = Column(Integer, default=0)
+    data = Column(JSONB)
 
     recipe_id = Column(Integer, ForeignKey("recipe.id"))
     recipe = relationship("Recipe", back_populates="instructions")
-
-    requirements = relationship("Requirement", backref="instruction")
-    products = relationship("Product", backref="instruction")
-
-
-class Requirement(Model):
-    ingredient_id = Column(Integer, ForeignKey("ingredient.id"), primary_key=True)
-    instruction_id = Column(Integer, ForeignKey("instruction.id"), primary_key=True)
-    amount = Column(String, nullable=False, default="")
-
-
-class Product(Model):
-    ingredient_id = Column(Integer, ForeignKey("ingredient.id"), primary_key=True)
-    instruction_id = Column(Integer, ForeignKey("instruction.id"), primary_key=True)
-    amount = Column(String, nullable=False, default="")
