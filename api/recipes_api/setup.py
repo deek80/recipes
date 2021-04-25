@@ -22,7 +22,7 @@ class AppConfig(BaseSettings):
             yield session
 
     class Config:
-        env_prefix = "fastapi_"
+        env_prefix = "api_"
 
 
 config = AppConfig()

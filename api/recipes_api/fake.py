@@ -8,7 +8,7 @@ def init_db(session):
 def fake_recipe() -> Recipe:
     return Recipe(
         instructions=[
-            Instruction(data={"hello": "world"}),
+            Instruction(data={"instruction": "one"}),
             Instruction(data={"instruction": 2}),
         ],
         data={"my recipe": "data", "nested": {"stuff": "is ok"}},
