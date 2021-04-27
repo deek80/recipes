@@ -16,11 +16,11 @@ services:
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
-# web:
-#   build:
-#     context: ./web
-#   ports:
-#     - "3000:3000"
-#   volumes:
-#     - ./web/public:/opt/web/public
-#     - ./web/src:/opt/web/src
+  web:
+    build:
+      context: ./web
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web/public:/opt/web/public
+      - ./web/src:/opt/web/src
