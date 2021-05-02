@@ -19,14 +19,8 @@ def root(db=db):
 test = APIRouter(prefix="/test")
 
 
-@test.get("/config")
-def get_config():
-    return config
-
-
 @test.get("/seed", response_model=schemas.Recipe)
 def seed(db=db):
-    from recipes_api.fake import init_db, seed_db
+    from recipes_api.fake import seed_db
 
-    init_db(db)
     seed_db(db)
