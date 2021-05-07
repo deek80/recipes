@@ -1,0 +1,71 @@
+{
+  "id": 1,
+  "data": {
+    "name": "Sorta Shepherd's Pie",
+    "path": "test-recipe"
+  },
+  "instructions": [
+    {
+      "id": 1,
+      "data": {
+        "details": "dice, boil, and drain {{ingredients.0}}. Mash with {{ingredients.1}}.",
+        "required": {
+          "ingredients": [
+            {
+              "name": "potatoes",
+              "amount": "3 large"
+            },
+            {
+              "name": "butter",
+              "amount": "1 tbsp"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "data": {
+        "details": "brown the {{ingredients.0}} in a frying pan (about 5 minutes) then mix in {{ingredients.1}} and cook for another 3 minutes.",
+        "required": {
+          "ingredients": [
+            {
+              "name": "ground beef",
+              "amount": "450g"
+            },
+            {
+              "name": "frozen peas and carrots",
+              "amount": "200g"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 3,
+      "data": {
+        "details": "spread the {{instructions.1}} in a 9x13 glass baking dish, and spread the {{instructions.0}} evenly on top. Sprinkle the {{ingredients.0}} in 2 or 3 chunks on top, and bake for 30 minutes",
+        "required": {
+          "ingredients": [
+            {
+              "name": "butter",
+              "amount": "2 tbsp"
+            }
+          ],
+          "instructions": [
+            {
+              "id": 1,
+              "name": "mashed potatoes",
+              "amount": "all"
+            },
+            {
+              "id": 2,
+              "name": "ground beef mixture",
+              "amount": "all"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

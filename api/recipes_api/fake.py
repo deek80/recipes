@@ -2,6 +2,10 @@ from recipes_api.models import *
 
 
 def seed_db(session):
+    # It's pretty fucked up to create a recipe this way...but I'm still holding
+    # onto the idea that it makes sense in the end. Hopefully it won't be too
+    # hard to automate this creation, given a representation of a recipe from
+    # the front end.
     Model.metadata.create_all(bind=session.get_bind())
     recipe = Recipe(data={"name": "Sorta Shepherd's Pie", "path": "test-recipe"})
     session.add(recipe)
