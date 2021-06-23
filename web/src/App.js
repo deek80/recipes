@@ -1,17 +1,10 @@
 import React from "react";
-import {makeStyles} from "@material-ui/core";
-
-const useStyles = makeStyles({
-  root: {
-    height: "100vh",
-    width: "100vw",
-    backgroundColor: "orange",
-  },
-});
+import Instruction from "./components/Instruction";
+import test_recipe from "./test/get_recipe.json";
 
 const App = () => {
-  const classes = useStyles();
-  return <div className={classes.root}>TEST 1 2</div>;
+  //console.log(test_recipe.instructions);
+  return <Instruction {...test_recipe.instructions[0]} />;
 };
 
 export default App;

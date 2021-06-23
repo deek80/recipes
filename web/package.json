@@ -24,6 +24,7 @@
     "prettier": "^2.2.1"
   },
   "prettier": {
+    "arrowParens": "avoid",
     "bracketSpacing": false,
     "trailingComma": "es5"
   },
